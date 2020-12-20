@@ -43,9 +43,12 @@ kotlin {
       dependencies {
         implementation deps.kotlin.test.common
         implementation deps.kotlin.test.annotations
+        implementation deps.kotlin.time
+        implementation project(":okio-testing")
       }
     }
     nonJvmMain {
+      dependsOn commonMain
       kotlin.srcDirs += 'src/hashFunctions/kotlin'
     }
     jvmMain {
@@ -66,6 +69,7 @@ kotlin {
       dependsOn nonJvmMain
       dependencies {
         api deps.kotlin.stdLib.js
+        implementation("org.jetbrains.kotlinx:kotlinx-nodejs:0.0.7")
       }
     }
     jsTest {
@@ -73,17 +77,39 @@ kotlin {
         implementation deps.kotlin.test.js
       }
     }
+
     nativeMain {
       dependsOn nonJvmMain
     }
     nativeTest {
       dependsOn commonTest
     }
+
+    mingwX64Main {
+      dependsOn nativeMain
+    }
+
+    unixMain {
+      dependsOn nativeMain
+    }
+
     appleMain {
       dependsOn nonJvmMain
+      dependsOn unixMain
+    }
+    macosX64Main {
+      dependsOn appleMain
+      dependsOn unixMain
     }
     appleTest {
       dependsOn commonTest
+    }
+
+    linuxMain {
+      dependsOn unixMain
+    }
+    linuxX64Main {
+      dependsOn linuxMain
     }
 
     configure([iosX64Main, iosArm64Main, watchosArm32Main, watchosArm64Main, watchosX86Main, linuxX64Main, macosX64Main,
@@ -105,6 +131,7 @@ kotlin {
 
 tasks.withType(JavaCompile) {
   options.encoding = 'UTF-8'
+  targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 apply from: 'jvm/jvm.gradle'

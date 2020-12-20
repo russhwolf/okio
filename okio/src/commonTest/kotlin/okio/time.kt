@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package okio.files
+package okio
 
-import kotlinx.datetime.Clock
-import okio.DIRECTORY_SEPARATOR
-import okio.Filesystem
-import kotlin.time.ExperimentalTime
+import kotlinx.datetime.Instant
 
-@ExperimentalTime
-class SystemFilesystemTest : AbstractFilesystemTest(
-  clock = Clock.System,
-  filesystem = Filesystem.SYSTEM,
-  windowsLimitations = DIRECTORY_SEPARATOR == "\\",
-  temporaryDirectory = Filesystem.SYSTEM_TEMPORARY_DIRECTORY
-)
+internal val FileMetadata.createdAt: Instant?
+  get() {
+    val createdAt = createdAtMillis ?: return null
+    return Instant.fromEpochMilliseconds(createdAt)
+  }
+
+internal val FileMetadata.lastModifiedAt: Instant?
+  get() {
+    val lastModifiedAt = lastModifiedAtMillis ?: return null
+    return Instant.fromEpochMilliseconds(lastModifiedAt)
+  }
+
+internal val FileMetadata.lastAccessedAt: Instant?
+  get() {
+    val lastAccessedAt = lastAccessedAtMillis ?: return null
+    return Instant.fromEpochMilliseconds(lastAccessedAt)
+  }
